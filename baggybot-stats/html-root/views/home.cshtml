@@ -1,0 +1,28 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<baggybot_stats.Database.SqlConnector>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Statistics for #fofftopic</title>
+</head>
+<body>
+    <table>
+        <thead>
+        <tr>
+            <th>User Id</th>
+            <th>Total Lines</th>
+            <th>Total Words</th>
+        </tr>
+        </thead>
+        @foreach (var user in Model.UserStatistics)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.Lines</td>
+                <td>@user.Words</td>
+        </tr>
+        }
+    </table>
+</body>
+</html>
