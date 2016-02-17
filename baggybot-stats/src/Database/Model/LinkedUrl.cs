@@ -5,6 +5,12 @@ namespace baggybot_stats.Database.Model
 	[Table(Name = "linked_url")]
 	public class LinkedUrl : Poco
 	{
+		public static LinkedUrl WithUser(LinkedUrl url, User user)
+		{
+			url.LastUsedBy = user;
+			return url;
+		}
+
 		[Column(Name = "id"), PrimaryKey, Identity]
 		public int Id { get; set; }
 

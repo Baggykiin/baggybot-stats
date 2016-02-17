@@ -1,13 +1,20 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<baggybot_stats.Model.UserStatistics>
-
-
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Statistics for #fofftopic</title>
+
+    <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+    <script>
+        var token = "@Model.token";
+        $.getJSON("/api/stats", {'token': token}, function(response) {
+            alert(response);
+        });
+    </script>
 </head>
 <body>
-    <table>
+    <table id="user-overview">
         <thead>
         <tr>
             <th>Username</th>
@@ -16,15 +23,6 @@
             <th>W/L</th>
         </tr>
         </thead>
-        @foreach (var user in Model.Statistics)
-        {
-            <tr>
-                <td>@user.IrcUser.Name</td>
-                <td>@user.Lines</td>
-                <td>@user.Words</td>
-                <td>@(user.Words /(double)user.Lines)</td>
-        </tr>
-        }
     </table>
 </body>
 </html>

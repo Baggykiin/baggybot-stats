@@ -83,7 +83,10 @@
     <Compile Include="src\Database\Model\UserCredential.cs" />
     <Compile Include="src\Database\Model\UserStatistic.cs" />
     <Compile Include="src\Database\SqlConnector.cs" />
-    <Compile Include="src\Model\UserStatistics.cs" />
+    <Compile Include="src\ApiModel\Error.cs" />
+    <Compile Include="src\ApiModel\Response.cs" />
+    <Compile Include="src\ApiModel\Statistics.cs" />
+    <Compile Include="src\ApiModel\UserOverview.cs" />
     <Compile Include="src\Monitoring\Logger.cs" />
     <Compile Include="src\RazorConfiguration.cs" />
     <Compile Include="src\RequestHandler.cs" />
@@ -98,7 +101,9 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Scripts\jquery-2.1.0-vsdoc.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Nancy.Viewengines.Razor.1.4.3\build\Nancy.ViewEngines.Razor.targets" Condition="Exists('..\packages\Nancy.Viewengines.Razor.1.4.3\build\Nancy.ViewEngines.Razor.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
