@@ -1,4 +1,4 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<baggybot_stats.Database.SqlConnector>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<baggybot_stats.Model.UserStatistics>
 
 
 <!DOCTYPE html>
@@ -10,17 +10,19 @@
     <table>
         <thead>
         <tr>
-            <th>User Id</th>
-            <th>Total Lines</th>
-            <th>Total Words</th>
+            <th>Username</th>
+            <th>Lines</th>
+            <th>Words</th>
+            <th>W/L</th>
         </tr>
         </thead>
-        @foreach (var user in Model.UserStatistics)
+        @foreach (var user in Model.Statistics)
         {
             <tr>
-                <td>@user.UserId</td>
+                <td>@user.IrcUser.Name</td>
                 <td>@user.Lines</td>
                 <td>@user.Words</td>
+                <td>@(user.Words /(double)user.Lines)</td>
         </tr>
         }
     </table>

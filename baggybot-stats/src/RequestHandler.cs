@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using baggybot_stats.Database;
+using baggybot_stats.Database.Model;
+using baggybot_stats.Model;
 using baggybot_stats.Monitoring;
+using LinqToDB;
 using Nancy;
 
 namespace baggybot_stats
@@ -22,7 +25,18 @@ namespace baggybot_stats
 
 		public RequestHandler()
 		{
-			Get["/"] = parameters => View["html-root/views/home.cshtml", conn];
+			var stats = (from stat in conn.UserStatistics
+						 join user in conn.Users on stat.UserId equals user.Id
+						 select new UserStatistic
+						 {
+							 Actions = stat.Actions,
+							 Lines = stat.Lines,
+							 Profanities = stat.Profanities,
+							 Words = stat.Words,
+							 IrcUser = user
+						 }).ToList();
+
+			Get["/"] = parameters => View["html-root/views/home.cshtml", new UserStatistics(stats)];
 		}
 	}
 }
