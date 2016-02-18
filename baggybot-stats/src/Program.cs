@@ -18,7 +18,7 @@ namespace baggybot_stats
 			StaticConfiguration.DisableErrorTraces = false;
 			Logger.Log("Starting BaggyBot stats page server");
 			Logger.Log("Creating host");
-			var host = new NancyHost(new Uri("http://127.0.0.1:57475"));
+			var host = new NancyHost(new Uri("http://127.0.0.1:8080"));
 			Logger.Log("Starting host");
 			host.Start();
 			Logger.Log("Server is ready");

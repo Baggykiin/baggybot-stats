@@ -17,5 +17,11 @@ namespace baggybot_stats.Database.Model
 		[Column(Name = "last_used_by"), NotNull]
 		public int LastUsedById { get; set; }
 		public User LastUsedBy { get; set; }
+
+		public static UsedEmoticon WithUser(UsedEmoticon emoticon, User user)
+		{
+			emoticon.LastUsedBy = user;
+			return emoticon;
+		}
 	}
 }

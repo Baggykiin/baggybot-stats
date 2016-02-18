@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using baggybot_stats.ApiModel;
@@ -10,13 +11,12 @@ using baggybot_stats.Monitoring;
 using LinqToDB;
 using LinqToDB.SchemaProvider;
 using Nancy;
+using Nancy.Session;
 
 namespace baggybot_stats
 {
 	public class RequestHandler : NancyModule
 	{
-		public static List<string> ValidRequestTokens = new List<string>();
-
 		private static readonly SqlConnector conn;
 		static RequestHandler()
 		{
@@ -24,39 +24,18 @@ namespace baggybot_stats
 			conn = new SqlConnector();
 			//conn.OpenConnection("Server=localhost;Port=5432;Database=baggybot_irc;User Id=baggybot;Password=baggybot;");
 			conn.OpenConnection("Server=hubble.jgeluk.net;Port=5432;Database=baggybot_irc;User Id=baggybot;Password=YQAgcS2QFES5ltn01pjF1rU!5;SSL Mode=Require;");
-			ValidRequestTokens.Add("test");
 		}
 
-		private static string GenerateToken()
+		private static string GenerateToken(ISession session)
 		{
 			var token = Guid.NewGuid().ToString();
-			lock (ValidRequestTokens)
-			{
-				ValidRequestTokens.Add(token);
-			}
+			session["token"] = token;
 			return token;
-		}
-
-		private bool CheckToken(string token)
-		{
-			if (ValidRequestTokens.Contains(token))
-			{
-				lock (ValidRequestTokens)
-				{
-					ValidRequestTokens.Remove(token);
-				}
-				return true;
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 		public RequestHandler()
 		{
-			Get["/"] = parameters => View["html-root/views/home.cshtml", new {token = GenerateToken()}];
-
+			Get["/"] = parameters => View["home.cshtml", new { token = GenerateToken(Session) }];
 			Get["/api/stats"] = parameters =>
 			{
 				var token = (string)Request.Query.token;
@@ -69,7 +48,7 @@ namespace baggybot_stats
 						Data = Error.AuthenticationRequired
 					});
 				}
-				else if (!CheckToken(token))
+				if ((string)Session["token"] != token)
 				{
 					return Response.AsJson(new ApiResponse
 					{
@@ -88,6 +67,7 @@ namespace baggybot_stats
 						FeaturedQuote = null,
 						UserOverview = (from stat in conn.UserStatistics
 										join user in conn.Users on stat.UserId equals user.Id
+										orderby stat.Lines descending
 										select new UserOverview
 										{
 											Actions = stat.Actions,
@@ -104,8 +84,9 @@ namespace baggybot_stats
 									  join user in conn.Users on url.LastUsedById equals user.Id
 									  select LinkedUrl.WithUser(url, user)),
 						UsedEmoticons = (from emoticon in conn.Emoticons
+										 join user in conn.Users on emoticon.LastUsedById equals user.Id
 										 orderby emoticon.Uses descending
-										 select emoticon)
+										 select UsedEmoticon.WithUser(emoticon, user))
 					}
 				});
 			};
