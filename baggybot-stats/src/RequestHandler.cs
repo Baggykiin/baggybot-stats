@@ -35,7 +35,11 @@ namespace baggybot_stats
 
 		public RequestHandler()
 		{
-			Get["/"] = parameters => View["home.cshtml", new { token = GenerateToken(Session) }];
+			Get["/"] = parameters =>
+			{
+				Logger.Log($"{Request.UserHostAddress}: GET / -- {Request.Headers.Referrer} -- {Request.Headers.UserAgent}", LogLevel.Irc);
+				return View["home.cshtml", new {token = GenerateToken(Session)}];
+			};
 			Get["/api/stats"] = parameters =>
 			{
 				var token = (string)Request.Query.token;
