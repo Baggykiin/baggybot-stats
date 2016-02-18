@@ -1,0 +1,82 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+<!DOCTYPE html>
+<html lang="en" ng-app="statsPage">
+<head>
+    <title>Statistics for #fofftopic</title>
+
+    <link rel="stylesheet" href="/content/css/main.css"/>
+
+    <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.js"></script>
+    <script src="/content/js/controllers.js"></script>
+    <script>
+        var token = '@Model.token';
+        var updateStats = function() {
+            $.getJSON('/api/stats', { 'token': token }, function(response) {
+                if (response.success) {
+                    var data = response.data;
+                    var $scope = angular.element("#stats").scope();
+                    $scope.$apply(function() {
+                        $scope.stats = data;
+                    });
+                }
+            });
+            setTimeout(updateStats, 2000);
+        }
+        updateStats();
+    </script>
+</head>
+<body>
+<div id="stats" ng-controller="statsCtrl">
+    <h1>User statistics</h1>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Lines</th>
+            <th>Words</th>
+            <th>W/L</th>
+            <th>Actions</th>
+            <th>Profanities</th>
+            <th>Random Quote</th>
+        </tr>
+        <tr ng-repeat="user in stats.userOverview">
+            <td>{{user.username}}</td>
+            <td>{{user.lines}}</td>
+            <td>{{user.words}}</td>
+            <td>{{user.wordsPerLine | number : 2}}</td>
+            <td>{{user.actions}}</td>
+            <td>{{user.profanities}}</td>
+            <td>{{user.randomQuote}}</td>
+        </tr>
+    </table>
+    <h1>Most-used emoticons</h1>
+    <table>
+        <tr>
+            <th>Emoticon</th>
+            <th>Uses</th>
+            <th>Last used by</th>
+        </tr>
+        <tr ng-repeat="emoticon in stats.usedEmoticons">
+            <td>{{emoticon.emoticon}}</td>
+            <td>{{emoticon.uses}}</td>
+            <td>{{emoticon.lastUsedBy.name}}</td>
+        </tr>
+    </table>
+    <h1>Linked URLs</h1>
+    <table>
+        <tr>
+            <th>Url</th>
+            <th>Uses</th>
+            <th>Last used by</th>
+            <th>Last usage</th>
+        </tr>
+        <tr ng-repeat="url in stats.linkedUrls">
+            <td><a href="{{url.url}}">{{url.url}}</a></td>
+            <td>{{url.uses}}</td>
+            <td>{{url.lastUsedBy.name}}</td>
+            <td>{{url.lastUsage}}</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
