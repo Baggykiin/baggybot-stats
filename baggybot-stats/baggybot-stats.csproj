@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="src\Configuration\ConfigManager.cs" />
     <Compile Include="src\Configuration\Configuration.cs" />
+    <Compile Include="src\Database\DatabaseManager.cs" />
     <Compile Include="src\Database\LockObject.cs" />
     <Compile Include="src\Database\Model\IrcLog.cs" />
     <Compile Include="src\Database\Model\KeyValuePair.cs" />

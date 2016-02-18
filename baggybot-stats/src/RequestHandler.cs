@@ -18,13 +18,13 @@ namespace baggybot_stats
 {
 	public class RequestHandler : NancyModule
 	{
-		private static readonly SqlConnector conn;
+		private static readonly DatabaseManager dbMgr;
 		static RequestHandler()
 		{
 			Logger.Log("Creating DB connection");
-			conn = new SqlConnector();
+
 			//conn.OpenConnection("Server=localhost;Port=5432;Database=baggybot_irc;User Id=baggybot;Password=baggybot;");
-			conn.OpenConnection(ConfigManager.Config.ConnectionString);
+			dbMgr.OpenConnection(ConfigManager.Config.ConnectionString);
 		}
 
 		private static string GenerateToken(ISession session)
@@ -62,39 +62,11 @@ namespace baggybot_stats
 						Data = Error.InvalidRequestToken
 					});
 				}
-				var orderedQuotes = (from quote in conn.Quotes
-				                     orderby quote.TakenAt descending
-				                     select quote);
+
 				return Response.AsJson(new ApiResponse
 				{
 					Success = true,
-					Data = new StatisticsOverview
-					{
-						FeaturedQuote = null,
-						UserOverview = (from stat in conn.UserStatistics
-						                join user in conn.Users on stat.UserId equals user.Id
-						                orderby stat.Lines descending
-						                select new UserOverview
-						                {
-						                	Actions = stat.Actions,
-						                	Lines = stat.Lines,
-						                	Profanities = stat.Profanities,
-						                	Words = stat.Words,
-						                	Username = user.Name,
-						                	WordsPerLine = stat.Words / (double)stat.Lines,
-						                	RandomQuote = (from quote in orderedQuotes
-						                	               where quote.AuthorId == stat.UserId
-						                	               select quote.Text).First()
-						                }),
-						LinkedUrls = (from url in conn.LinkedUrls
-						              join user in conn.Users on url.LastUsedById equals user.Id
-						              orderby url.Uses descending
-						              select LinkedUrl.WithUser(url, user)),
-						UsedEmoticons = (from emoticon in conn.Emoticons
-						                 join user in conn.Users on emoticon.LastUsedById equals user.Id
-						                 orderby emoticon.Uses descending
-						                 select UsedEmoticon.WithUser(emoticon, user))
-					}
+					Data = 
 				});
 			};
 		}
