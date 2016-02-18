@@ -40,12 +40,12 @@ namespace baggybot_stats
 			{
 				var token = GenerateToken(Session);
 				Logger.Log($"{DateTime.Now} {Request.UserHostAddress}: GET / -- {Request.Headers.Referrer} -- {Request.Headers.UserAgent} -- token: {token}", LogLevel.Debug);
-				return View["home.cshtml", new {token = token}];
+				return View["home.cshtml", new { token = token }];
 			};
 			Get["/api/stats"] = parameters =>
 			{
 				var token = (string)Request.Query.token;
-				
+
 				if (string.IsNullOrWhiteSpace(token))
 				{
 					return Response.AsJson(new ApiResponse
@@ -63,8 +63,8 @@ namespace baggybot_stats
 					});
 				}
 				var orderedQuotes = (from quote in conn.Quotes
-									 orderby quote.TakenAt descending
-									 select quote);
+				                     orderby quote.TakenAt descending
+				                     select quote);
 				return Response.AsJson(new ApiResponse
 				{
 					Success = true,
@@ -72,28 +72,28 @@ namespace baggybot_stats
 					{
 						FeaturedQuote = null,
 						UserOverview = (from stat in conn.UserStatistics
-										join user in conn.Users on stat.UserId equals user.Id
-										orderby stat.Lines descending
-										select new UserOverview
-										{
-											Actions = stat.Actions,
-											Lines = stat.Lines,
-											Profanities = stat.Profanities,
-											Words = stat.Words,
-											Username = user.Name,
-											WordsPerLine = stat.Words / (double)stat.Lines,
-											RandomQuote = (from quote in orderedQuotes
-														   where quote.AuthorId == stat.UserId
-														   select quote.Text).First()
-										}),
+						                join user in conn.Users on stat.UserId equals user.Id
+						                orderby stat.Lines descending
+						                select new UserOverview
+						                {
+						                	Actions = stat.Actions,
+						                	Lines = stat.Lines,
+						                	Profanities = stat.Profanities,
+						                	Words = stat.Words,
+						                	Username = user.Name,
+						                	WordsPerLine = stat.Words / (double)stat.Lines,
+						                	RandomQuote = (from quote in orderedQuotes
+						                	               where quote.AuthorId == stat.UserId
+						                	               select quote.Text).First()
+						                }),
 						LinkedUrls = (from url in conn.LinkedUrls
-									  join user in conn.Users on url.LastUsedById equals user.Id
-									  orderby url.Uses descending
-									  select LinkedUrl.WithUser(url, user)),
+						              join user in conn.Users on url.LastUsedById equals user.Id
+						              orderby url.Uses descending
+						              select LinkedUrl.WithUser(url, user)),
 						UsedEmoticons = (from emoticon in conn.Emoticons
-										 join user in conn.Users on emoticon.LastUsedById equals user.Id
-										 orderby emoticon.Uses descending
-										 select UsedEmoticon.WithUser(emoticon, user))
+						                 join user in conn.Users on emoticon.LastUsedById equals user.Id
+						                 orderby emoticon.Uses descending
+						                 select UsedEmoticon.WithUser(emoticon, user))
 					}
 				});
 			};
