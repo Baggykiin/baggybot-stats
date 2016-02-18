@@ -44,8 +44,7 @@ namespace baggybot_stats
 			Get["/api/stats"] = parameters =>
 			{
 				var token = (string)Request.Query.token;
-
-				Logger.Log($"API request with token {token}", LogLevel.Irc);
+				
 				if (string.IsNullOrWhiteSpace(token))
 				{
 					return Response.AsJson(new ApiResponse
@@ -62,7 +61,6 @@ namespace baggybot_stats
 						Data = Error.InvalidRequestToken
 					});
 				}
-				Logger.Log($"Acquiring data...", LogLevel.Irc);
 				var orderedQuotes = (from quote in conn.Quotes
 									 orderby quote.TakenAt descending
 									 select quote);
