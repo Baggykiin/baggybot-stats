@@ -1,0 +1,2 @@
+﻿listen-urls: ["http://127.0.0.1:8080"]
+connection-string: "Server=localhost;Port=5432;Database=baggybot;User Id=baggybot;Password=baggybot;"

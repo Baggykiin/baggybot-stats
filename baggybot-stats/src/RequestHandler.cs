@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using baggybot_stats.ApiModel;
+using baggybot_stats.Configuration;
 using baggybot_stats.Database;
 using baggybot_stats.Database.Model;
 using baggybot_stats.Monitoring;
@@ -17,13 +18,13 @@ namespace baggybot_stats
 {
 	public class RequestHandler : NancyModule
 	{
-		private static readonly SqlConnector conn;
+		private static readonly DatabaseManager dbMgr;
 		static RequestHandler()
 		{
 			Logger.Log("Creating DB connection");
-			conn = new SqlConnector();
+
 			//conn.OpenConnection("Server=localhost;Port=5432;Database=baggybot_irc;User Id=baggybot;Password=baggybot;");
-			conn.OpenConnection("Server=hubble.jgeluk.net;Port=5432;Database=baggybot_irc;User Id=baggybot;Password=YQAgcS2QFES5ltn01pjF1rU!5;SSL Mode=Require;");
+			dbMgr.OpenConnection(ConfigManager.Config.ConnectionString);
 		}
 
 		private static string GenerateToken(ISession session)
@@ -39,7 +40,7 @@ namespace baggybot_stats
 			{
 				var token = GenerateToken(Session);
 				Logger.Log($"{DateTime.Now} {Request.UserHostAddress}: GET / -- {Request.Headers.Referrer} -- {Request.Headers.UserAgent} -- token: {token}", LogLevel.Debug);
-				return View["home.cshtml", new {token = token}];
+				return View["home.cshtml", new { token = token }];
 			};
 			Get["/api/stats"] = parameters =>
 			{
@@ -61,38 +62,10 @@ namespace baggybot_stats
 						Data = Error.InvalidRequestToken
 					});
 				}
-				var orderedQuotes = (from quote in conn.Quotes
-									 orderby quote.TakenAt descending
-									 select quote);
 				return Response.AsJson(new ApiResponse
 				{
 					Success = true,
-					Data = new StatisticsOverview
-					{
-						FeaturedQuote = null,
-						UserOverview = (from stat in conn.UserStatistics
-										join user in conn.Users on stat.UserId equals user.Id
-										orderby stat.Lines descending
-										select new UserOverview
-										{
-											Actions = stat.Actions,
-											Lines = stat.Lines,
-											Profanities = stat.Profanities,
-											Words = stat.Words,
-											Username = user.Name,
-											WordsPerLine = stat.Words / (double)stat.Lines,
-											RandomQuote = (from quote in orderedQuotes
-														   where quote.AuthorId == stat.UserId
-														   select quote.Text).First()
-										}),
-						LinkedUrls = (from url in conn.LinkedUrls
-									  join user in conn.Users on url.LastUsedById equals user.Id
-									  select LinkedUrl.WithUser(url, user)),
-						UsedEmoticons = (from emoticon in conn.Emoticons
-										 join user in conn.Users on emoticon.LastUsedById equals user.Id
-										 orderby emoticon.Uses descending
-										 select UsedEmoticon.WithUser(emoticon, user))
-					}
+					Data = erro 
 				});
 			};
 		}

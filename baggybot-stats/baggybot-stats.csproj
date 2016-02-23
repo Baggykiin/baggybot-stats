@@ -67,8 +67,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="YamlDotNet, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YamlDotNet.3.8.0\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Configuration\ConfigManager.cs" />
+    <Compile Include="src\Configuration\Configuration.cs" />
+    <Compile Include="src\Database\DatabaseManager.cs" />
     <Compile Include="src\Database\LockObject.cs" />
     <Compile Include="src\Database\Model\IrcLog.cs" />
     <Compile Include="src\Database\Model\KeyValuePair.cs" />
@@ -97,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="src\EmbeddedData\example-config.yaml" />
     <None Include="views\home.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
