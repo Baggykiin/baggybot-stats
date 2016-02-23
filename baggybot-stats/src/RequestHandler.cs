@@ -18,12 +18,10 @@ namespace baggybot_stats
 {
 	public class RequestHandler : NancyModule
 	{
-		private static readonly DatabaseManager dbMgr;
+		private static readonly DatabaseManager dbMgr = new DatabaseManager();
 		static RequestHandler()
 		{
 			Logger.Log("Creating DB connection");
-
-			//conn.OpenConnection("Server=localhost;Port=5432;Database=baggybot_irc;User Id=baggybot;Password=baggybot;");
 			dbMgr.OpenConnection(ConfigManager.Config.ConnectionString);
 		}
 
@@ -65,7 +63,7 @@ namespace baggybot_stats
 				return Response.AsJson(new ApiResponse
 				{
 					Success = true,
-					Data = erro 
+					Data = dbMgr.Stats
 				});
 			};
 		}
